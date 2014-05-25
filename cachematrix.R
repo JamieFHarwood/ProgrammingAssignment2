@@ -16,15 +16,15 @@
 ## Create an object that stores a given matrix and a mechanism
 ## for storing the inverse of this matrix
 
-makeCacheMatrix <- function(x = matrix()) {
-  m <- NULL
-  set <- function(y) {
-    x <<- y
-    m <<- NULL
+makeCacheMatrix <- function(baseMatrix = matrix()) {
+  inverse <- NULL
+  set <- function(newMatrix) {
+    baseMatrix <<- newMatrix
+    inverse <<- NULL
   }
-  get <- function() x
-  setinverse <- function(matrix) m <<- matrix
-  getinverse <- function() m
+  get <- function() baseMatrix
+  setinverse <- function(matrix) inverse <<- matrix
+  getinverse <- function() inverse
   list(set = set, get = get,
        setinverse = setinverse,
        getinverse = getinverse)
@@ -34,14 +34,13 @@ makeCacheMatrix <- function(x = matrix()) {
 ## Take the result of a call to makeCacheMatrix as input and return the 
 ## inverse of the input's matrix field
 
-cacheSolve <- function(x, ...) {
-  ## Return a matrix that is the inverse of 'x'
-  m <- x$getinverse()
-  if(!is.null(m)) {
-    return(m)
+cacheSolve <- function(mcmObj, ...) {
+  tmpInverse <- mcmObj$getinverse()
+  if(!is.null(tmpInverse)) {
+    return(tmpInverse)
   }
-  data <- x$get()
-  m <- solve(data, ...)
-  x$setinverse(m)
-  m
+  baseMatrix <- mcmObj$get()
+  tmpInverse <- solve(baseMatrix, ...)
+  mcmObj$setinverse(tmpInverse)
+  tmpInverse
 }
